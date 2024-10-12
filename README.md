@@ -1,6 +1,6 @@
 # Pokémon Battle Application
 
-Welcome to the Pokémon Battle Application! This project is a full-stack web application that allows users to view, modify, and interact with a list of Pokémon. The frontend is built with **Angular** using **standalone components** and **Bootstrap** for styling. The backend is powered by **Node.js**, **Express**, and **Supabase** as the database.
+Welcome to the Pokémon Battle Application! This project is a full-stack web application that allows users to view, modify, and interact with a list of Pokémon, as well as create teams of pokemons that can enter to battle against other teams. The frontend is built with **Angular** using **standalone components** and **Bootstrap** for styling. The backend is powered by **Node.js**, **Express**, and **Supabase** as the database.
 
 ---
 
@@ -14,6 +14,10 @@ Welcome to the Pokémon Battle Application! This project is a full-stack web app
   - [GET /api/pokemon](#get-apipokemon)
   - [GET /api/pokemon/:id](#get-apipokemonid)
   - [PUT /api/pokemon/:id](#put-apipokemonid)
+  - [GET /api/teams](#get-apiteams)
+  - [POST /api/teams](#post-apiteams)
+  - [GET /api/team/:teamId](#get-apiteamteamid)
+  - [GET /api/type-factor/:type1/:type2](#get-apitype-factortype1type2)
 - [Project Structure](#project-structure)
 - [Troubleshooting](#troubleshooting)
 - [Additional Notes](#additional-notes)
@@ -25,6 +29,8 @@ Welcome to the Pokémon Battle Application! This project is a full-stack web app
 
 - **Display Pokémon List**: View a list of Pokémon with their details.
 - **Modify Pokémon**: Edit Pokémon attributes like type, power, and life.
+- **Team Management**: Create and view Pokémon teams.
+- **Battle Simulation**: Calculate type effectiveness in Pokémon battles.
 - **Responsive Design**: The app is styled using Bootstrap for responsiveness.
 - **API Integration**: Communicates with a backend API built with Express and Supabase.
 
@@ -75,6 +81,20 @@ PORT=5000
 
 - Replace `your_supabase_url` with your Supabase project URL.
 - Replace `your_supabase_anon_key` with your Supabase anonymous API key.
+
+### 5. Seed your database
+
+Import the CSV files in /server/data into your tables:
+
+- pokemon_type.csv
+- pokemon.csv
+- weakness.csv
+
+Import the Supabase PostgreSQL functions in /server/scripts to your Supabase project:
+
+- get-teams-ordered-by-power.sql
+- insert-team.sql
+- team-and-pokemon-overview.sql
 
 ---
 
@@ -206,6 +226,117 @@ Content-Type: application/json
 }
 ```
 
+### GET /api/teams
+
+Retrieve a list of all teams ordered by their total power.
+
+- **URL**: `/api/teams`
+- **Method**: `GET`
+- **Response**: An array of team objects with their total power.
+
+#### Example Response
+
+```json
+[
+  {
+    "id": 1,
+    "team_name": "Team Rocket",
+    "total_power": 300
+  },
+  {
+    "id": 2,
+    "team_name": "Elite Four",
+    "total_power": 450
+  }
+]
+```
+
+### POST /api/teams
+
+Create a new team.
+
+- **URL**: `/api/teams`
+- **Method**: `POST`
+- **Response**: The ID of the newly created team.
+
+#### Example Response
+
+```json
+{
+  "new_team_id": 3
+}
+```
+
+### GET /api/team/:teamId
+
+Retrieve details of a specific team, including its Pokémon.
+
+- **URL**: `/api/team/:teamId`
+- **Method**: `GET`
+- **URL Parameters**:
+  - `teamId` (number): The ID of the team.
+- **Response**: An object containing team details and an array of its Pokémon.
+
+#### Example Request
+
+```bash
+GET /api/team/1
+```
+
+#### Example Response
+
+```json
+{
+  "team": {
+    "id": 1,
+    "name": "Team Rocket"
+  },
+  "pokemons": [
+    {
+      "id": "1f4b5f57-6c9d-461b-9819-33357287b1c0",
+      "name": "Bayleef",
+      "type": 1,
+      "power": 62,
+      "life": 60,
+      "image": "https://example.com/bayleef.png"
+    },
+    {
+      "id": "2a6c5f58-7d9f-472b-9820-44458387b2d1",
+      "name": "Charizard",
+      "type": 2,
+      "power": 84,
+      "life": 78,
+      "image": "https://example.com/charizard.png"
+    }
+  ]
+}
+```
+
+### GET /api/type-factor/:type1/:type2
+
+Retrieve the effectiveness factor between two Pokémon types.
+
+- **URL**: `/api/type-factor/:type1/:type2`
+- **Method**: `GET`
+- **URL Parameters**:
+  - `type1` (string): The name of the first Pokémon type.
+  - `type2` (string): The name of the second Pokémon type.
+- **Response**: An object containing the effectiveness factor.
+
+#### Example Request
+
+```bash
+GET /api/type-factor/Water/Fire
+```
+
+#### Example Response
+
+```json
+{
+  "factor": 2
+}
+```
+
 ---
 
 ## Project Structure
@@ -235,28 +366,6 @@ pokemon-battle-app/
 ├── package.json            # Project dependencies and scripts
 └── README.md
 ```
-
-## Data and Scripts
-
-The application includes pre-populated data and SQL scripts for database operations:
-
-### Data Files
-
-Located in the `server/data/` directory:
-
-- `pokemon_type.csv`: Contains information about Pokémon types.
-- `pokemon.csv`: Contains the main Pokémon data.
-- `weakness.csv`: Contains information about type weaknesses.
-
-### SQL Scripts
-
-Located in the `server/scripts/` directory:
-
-- `get-teams-ordered-by-power.sql`: SQL query to retrieve teams ordered by their power.
-- `insert-team.sql`: SQL script for inserting new teams into the database.
-- `team-and-pokemon-overview.sql`: SQL query to get an overview of teams and their Pokémon.
-
-These files are used to initialize and manage the database. Ensure that you have the necessary permissions and have set up your Supabase project to use these scripts and data files.
 
 ---
 
@@ -297,6 +406,9 @@ This project uses Supabase as the backend database. Ensure you have set up the f
 
 - `pokemon`: Stores Pokémon data (id, name, image, power, life, type)
 - `pokemon_type`: Stores Pokémon types (id, name)
+- `team`: Stores team data (id, name)
+- `team_pokemon`: Stores the relationship between teams and Pokémon
+- `weakness`: Stores type effectiveness data
 
 ### Environment Variables
 
@@ -311,5 +423,3 @@ The project uses `concurrently` to run both the server and client simultaneously
 ## Contact
 
 For any questions or feedback, please contact mohamed.aleya@outlook.com.
-
----
