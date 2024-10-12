@@ -1,0 +1,26 @@
+<!-- src/app/components/pokemon-list/pokemon-list.component.html -->
+
+<div class="container mt-4">
+  <h1 class="mb-4 text-center">Pokémon List</h1>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <div class="row">
+    <div class="col-md-4 mb-4" *ngFor="let pokemon of pokemonList">
+      <div class="card h-100">
+        <img [src]="pokemon.image" class="card-img-top" [alt]="pokemon.name" />
+        <div class="card-body">
+          <h5 class="card-title">{{ pokemon.name }}</h5>
+          <p class="card-text"><strong>Type:</strong> {{ pokemon.typeName }}</p>
+          <p class="card-text"><strong>Power:</strong> {{ pokemon.power }}</p>
+          <p class="card-text"><strong>Life:</strong> {{ pokemon.life }}</p>
+          <button class="btn btn-primary" (click)="openEditModal(pokemon)">
+            Modify
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

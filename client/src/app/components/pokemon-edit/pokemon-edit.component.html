@@ -1,0 +1,71 @@
+<div class="modal-layout">
+  <form (ngSubmit)="onSave()">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input
+        type="text"
+        id="name"
+        class="form-control"
+        [(ngModel)]="editedPokemon.name"
+        name="name"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="typeName">Type</label>
+      <select
+        id="typeName"
+        class="form-control"
+        [(ngModel)]="editedPokemon.typeName"
+        name="typeName"
+        required
+      >
+        <option value="Water">Water</option>
+        <option value="Fire">Fire</option>
+        <option value="Grass">Grass</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="power">Power</label>
+      <input
+        type="number"
+        id="power"
+        class="form-control"
+        [(ngModel)]="editedPokemon.power"
+        name="power"
+        min="10"
+        max="100"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="life">Life</label>
+      <input
+        type="number"
+        id="life"
+        class="form-control"
+        [(ngModel)]="editedPokemon.life"
+        name="life"
+        min="10"
+        max="100"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="image">Image URL</label>
+      <input
+        type="text"
+        id="image"
+        class="form-control"
+        [(ngModel)]="editedPokemon.image"
+        name="image"
+        required
+      />
+    </div>
+    <!-- Buttons -->
+    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="button" class="btn btn-secondary" (click)="onCancel()">
+      Cancel
+    </button>
+  </form>
+</div>
