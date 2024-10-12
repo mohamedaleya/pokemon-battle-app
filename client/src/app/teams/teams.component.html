@@ -1,7 +1,20 @@
 <div class="container mt-5">
-  <h2>Pokemon Teams</h2>
-  <p>Ordered by Total Power</p>
-  <table class="table table-striped mt-5">
+  <h2 class="text-center mb-4">Teams Ordered by Power</h2>
+
+  <!-- Add new team button -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <button class="btn btn-primary" (click)="addNewTeam()" [disabled]="loading">
+      <span
+        *ngIf="loading"
+        class="spinner-border spinner-border-sm"
+        role="status"
+        aria-hidden="true"
+      ></span>
+      <span *ngIf="!loading">Add New Team</span>
+    </button>
+  </div>
+
+  <table class="table table-striped">
     <thead>
       <tr>
         <th>Team Name</th>

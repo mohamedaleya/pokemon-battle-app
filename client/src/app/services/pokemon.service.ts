@@ -40,13 +40,15 @@ export class PokemonService {
     return this.http.get(`/api/teams`);
   }
 
+  addTeam(): Observable<any> {
+    return this.http.post(`api/teams`, {});
+  }
+
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'An unknown error occurred!';
     if (error.error instanceof ErrorEvent) {
-      // Client-side or network error
       errorMessage = `Error: ${error.error.message}`;
     } else {
-      // Backend returned unsuccessful response code
       errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
     }
     console.error(errorMessage);

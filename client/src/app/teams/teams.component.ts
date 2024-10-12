@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Import CommonModule
+import { CommonModule } from '@angular/common';
 import { PokemonService } from '../services/pokemon.service';
 
 @Component({
@@ -11,6 +11,7 @@ import { PokemonService } from '../services/pokemon.service';
 })
 export class TeamsComponent {
   teams: any[] = [];
+  loading: boolean = false;
 
   constructor(private pokemonService: PokemonService) {}
 
@@ -25,6 +26,21 @@ export class TeamsComponent {
       },
       (error) => {
         console.error('Error fetching teams:', error);
+      }
+    );
+  }
+
+  addNewTeam() {
+    this.loading = true;
+    this.pokemonService.addTeam().subscribe(
+      (data) => {
+        console.log('New team created:', data);
+        this.loadTeams();
+        this.loading = false;
+      },
+      (error) => {
+        console.error('Error adding team:', error);
+        this.loading = false;
       }
     );
   }
