@@ -36,12 +36,20 @@ export class PokemonService {
     return this.http.get<Pokemon>(url).pipe(catchError(this.handleError));
   }
 
+  addTeam(): Observable<any> {
+    return this.http.post(`api/teams`, {});
+  }
+
   getTeams(): Observable<any> {
     return this.http.get(`/api/teams`);
   }
 
-  addTeam(): Observable<any> {
-    return this.http.post(`api/teams`, {});
+  getTeamById(teamId: string): Observable<any> {
+    return this.http.get(`/api/team/${teamId}`);
+  }
+
+  getTypeFactor(type1: string, type2: string): Observable<any> {
+    return this.http.get(`/api/type-factor/${type1}/${type2}`);
   }
 
   private handleError(error: HttpErrorResponse) {

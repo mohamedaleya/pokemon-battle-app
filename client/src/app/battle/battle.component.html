@@ -1,0 +1,176 @@
+<div class="container battle-container">
+  <h2 class="text-center">Pokémon Battle Arena</h2>
+
+  <!-- Team Selection -->
+  <div *ngIf="!isBattleReady" class="team-selection">
+    <h4>Select Teams to Battle</h4>
+    <div class="row">
+      <div class="col-md-6">
+        <label for="team1">Select Team 1:</label>
+        <select
+          id="team1"
+          class="form-control"
+          [(ngModel)]="selectedTeam1"
+          (ngModelChange)="onTeamSelect()"
+        >
+          <option value="">Select a team</option>
+          <option *ngFor="let team of allTeams" [ngValue]="team.id">
+            {{ team.team_name }} - Power: {{ team.total_power }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label for="team2">Select Team 2:</label>
+        <select
+          id="team2"
+          class="form-control"
+          [(ngModel)]="selectedTeam2"
+          (ngModelChange)="onTeamSelect()"
+        >
+          <option value="">Select a team</option>
+          <option *ngFor="let team of allTeams" [ngValue]="team.id">
+            {{ team.team_name }} - Power: {{ team.total_power }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Start Battle button -->
+    <button
+      class="btn btn-primary mt-3"
+      [disabled]="!isTeamsSelected"
+      (click)="startBattle()"
+    >
+      Start Battle
+    </button>
+  </div>
+
+  <!-- Battle Arena -->
+  <div *ngIf="isBattleReady" class="battle-arena">
+    <h3 class="text-center">Round {{ currentRound }}</h3>
+
+    <div class="row">
+      <!-- Team 1 -->
+      <div class="col-md-6">
+        <h4 class="text-center">{{ team1Name }}</h4>
+        <div
+          *ngFor="let pokemon of team1"
+          class="pokemon-card"
+          [class.active]="pokemon === currentPokemon1"
+          [class.winner]="isWinningPokemon(pokemon)"
+        >
+          <img [src]="pokemon.image" class="pokemon-img" [alt]="pokemon.name" />
+          <div class="pokemon-info">
+            <h5>
+              {{ pokemon.name }}
+              <span *ngIf="pokemon.isKO" class="ko-badge">K.O.</span>
+            </h5>
+            <div class="health-bar">
+              <div
+                class="health"
+                [ngClass]="getHealthColor(pokemon)"
+                [style.width.%]="getHealthPercentage(pokemon)"
+              ></div>
+            </div>
+            <p>Health: {{ pokemon.life }}/100</p>
+            <p>Power: {{ pokemon.power }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team 2 -->
+      <div class="col-md-6">
+        <h4 class="text-center">{{ team2Name }}</h4>
+        <div
+          *ngFor="let pokemon of team2"
+          class="pokemon-card"
+          [class.active]="pokemon === currentPokemon2"
+          [class.winner]="isWinningPokemon(pokemon)"
+        >
+          <img [src]="pokemon.image" class="pokemon-img" [alt]="pokemon.name" />
+          <div class="pokemon-info">
+            <h5>
+              {{ pokemon.name }}
+              <span *ngIf="pokemon.isKO" class="ko-badge">K.O.</span>
+            </h5>
+            <div class="health-bar">
+              <div
+                class="health"
+                [ngClass]="getHealthColor(pokemon)"
+                [style.width.%]="getHealthPercentage(pokemon)"
+              ></div>
+            </div>
+            <p>Health: {{ pokemon.life }}/100</p>
+            <p>Power: {{ pokemon.power }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Battle Actions -->
+    <div *ngIf="battleActions.length > 0" class="battle-actions mt-3">
+      <h5>Battle Actions:</h5>
+      <ul>
+        <li *ngFor="let action of battleActions">
+          {{ action.attacker }} attacked {{ action.defender }} for
+          {{ action.damage }} damage!
+        </li>
+      </ul>
+    </div>
+
+    <!-- Battle Controls -->
+    <div class="row mt-3">
+      <div class="col text-center">
+        <!-- Disable "Previous Round" button when on Round 1 -->
+        <button
+          [disabled]="currentRound === 1"
+          class="btn btn-secondary me-2"
+          (click)="previousRound()"
+        >
+          Previous Round
+        </button>
+
+        <!-- Show "Next Round" button if not the last round -->
+        <button
+          *ngIf="!isLastRound"
+          class="btn btn-primary me-2"
+          (click)="battleRound()"
+        >
+          Next Round
+        </button>
+
+        <!-- Show "Next Round" button if navigating through existing logs -->
+        <button
+          *ngIf="isLastRound && currentRound < roundLogs.length"
+          class="btn btn-primary"
+          (click)="nextRound()"
+        >
+          Next Round
+        </button>
+      </div>
+    </div>
+
+    <!-- Show Winner and Battle Logs -->
+    <div *ngIf="winner && isLastRound" class="battle-result mt-4">
+      <h3 class="text-center">{{ winner }}</h3>
+      <div #battleLogs class="battle-logs mt-3">
+        <h4>Battle Logs:</h4>
+        <div *ngFor="let log of roundLogs" class="round-log">
+          <h5>Round {{ log.roundNumber }}</h5>
+          <ul>
+            <li *ngFor="let action of log.actions">
+              {{ action.attacker }} attacked {{ action.defender }} for
+              {{ action.damage }} damage!
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- New Battle button -->
+      <div class="text-center mt-3">
+        <button class="btn btn-success" (click)="startNewBattle()">
+          New Battle
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
