@@ -1,4 +1,4 @@
-<div class="modal-layout">
+<div class="p-4">
   <form (ngSubmit)="onSave()">
     <div class="form-group">
       <label for="name">Name</label>
@@ -11,7 +11,7 @@
         required
       />
     </div>
-    <div class="form-group">
+    <div class="form-group mt-2">
       <label for="typeName">Type</label>
       <select
         id="typeName"
@@ -25,7 +25,7 @@
         <option value="Grass">Grass</option>
       </select>
     </div>
-    <div class="form-group">
+    <div class="form-group mt-2">
       <label for="power">Power</label>
       <input
         type="number"
@@ -38,7 +38,7 @@
         required
       />
     </div>
-    <div class="form-group">
+    <div class="form-group mt-2">
       <label for="life">Life</label>
       <input
         type="number"
@@ -51,7 +51,7 @@
         required
       />
     </div>
-    <div class="form-group">
+    <div class="form-group mt-2">
       <label for="image">Image URL</label>
       <input
         type="text"
@@ -63,9 +63,11 @@
       />
     </div>
     <!-- Buttons -->
-    <button type="submit" class="btn btn-primary">Save</button>
-    <button type="button" class="btn btn-secondary" (click)="onCancel()">
-      Cancel
-    </button>
+    <div class="mt-4 d-flex gap-2 justify-content-between">
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">
+        Cancel
+      </button>
+      <button type="submit" class="btn btn-primary">Save</button>
+    </div>
   </form>
 </div>
