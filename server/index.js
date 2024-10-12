@@ -165,6 +165,27 @@ app.put("/api/pokemon/:id", async (req, res) => {
   }
 });
 
+app.get("/api/teams", async (req, res) => {
+  try {
+    // Call the PostgreSQL function using Supabase
+    const { data: teams, error } = await supabase.rpc(
+      "get_teams_ordered_by_power"
+    );
+
+    // Handle error if any
+    if (error) {
+      console.error("Error fetching teams:", error);
+      return res.status(500).json({ message: "Error fetching teams" });
+    }
+
+    // Send the list of teams with their total power
+    res.json(teams);
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
