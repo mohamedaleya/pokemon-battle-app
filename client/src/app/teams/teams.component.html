@@ -1,0 +1,18 @@
+<div class="container mt-5">
+  <h2>Pokemon Teams</h2>
+  <p>Ordered by Total Power</p>
+  <table class="table table-striped mt-5">
+    <thead>
+      <tr>
+        <th>Team Name</th>
+        <th>Total Power</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let team of teams">
+        <td>{{ team.team_name }}</td>
+        <td>{{ team.total_power }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

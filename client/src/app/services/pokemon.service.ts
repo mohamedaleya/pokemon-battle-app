@@ -16,26 +16,28 @@ export interface Pokemon {
   providedIn: 'root',
 })
 export class PokemonService {
-  private apiUrl = '/api/pokemon';
-
   constructor(private http: HttpClient) {}
 
   getAllPokemon(): Observable<Pokemon[]> {
     return this.http
-      .get<Pokemon[]>(this.apiUrl)
+      .get<Pokemon[]>('/api/pokemon')
       .pipe(catchError(this.handleError));
   }
 
   updatePokemon(pokemon: Pokemon): Observable<Pokemon> {
-    const url = `${this.apiUrl}/${pokemon.id}`;
+    const url = `/api/pokemon/${pokemon.id}`;
     return this.http
       .put<Pokemon>(url, pokemon)
       .pipe(catchError(this.handleError));
   }
 
   getPokemonById(id: string): Observable<Pokemon> {
-    const url = `${this.apiUrl}/${id}`;
+    const url = `/api/pokemon/${id}`;
     return this.http.get<Pokemon>(url).pipe(catchError(this.handleError));
+  }
+
+  getTeams(): Observable<any> {
+    return this.http.get(`/api/teams`);
   }
 
   private handleError(error: HttpErrorResponse) {
