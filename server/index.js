@@ -186,6 +186,22 @@ app.get("/api/teams", async (req, res) => {
   }
 });
 
+app.post("/api/teams", async (req, res) => {
+  try {
+    const { data, error } = await supabase.rpc("insert_team");
+
+    if (error) {
+      throw error;
+    }
+
+    // Return the new team's ID or some response data
+    res.json({ new_team_id: data });
+  } catch (err) {
+    console.error("Error inserting team:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
