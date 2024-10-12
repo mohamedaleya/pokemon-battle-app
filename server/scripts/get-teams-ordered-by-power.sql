@@ -1,11 +1,9 @@
-CREATE OR REPLACE FUNCTION get_teams_ordered_by_power()
-RETURNS TABLE (
-    team_name text,
-    total_power int
-) AS $$
+CREATE
+OR REPLACE FUNCTION get_teams_ordered_by_power () RETURNS TABLE (id UUID, team_name TEXT, total_power INT) AS $$
 BEGIN
     RETURN QUERY
     SELECT
+        t.id AS id,
         t.name AS team_name,
         SUM(p.power)::int AS total_power
     FROM
@@ -15,10 +13,13 @@ BEGIN
     JOIN
         pokemon p ON tp.pokemon_id = p.id
     GROUP BY
-        t.name
+        t.id, t.name
     ORDER BY
         total_power DESC;
 END;
 $$ LANGUAGE plpgsql;
 
-SELECT * FROM get_teams_ordered_by_power();
+SELECT
+  *
+FROM
+  get_teams_ordered_by_power ();

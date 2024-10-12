@@ -202,6 +202,58 @@ app.post("/api/teams", async (req, res) => {
   }
 });
 
+app.get("/api/team/:teamId", async (req, res) => {
+  const { teamId } = req.params;
+  try {
+    // Fetch the team details
+    const { data: teamData, error: teamError } = await supabase
+      .from("team")
+      .select("*")
+      .eq("id", teamId)
+      .single();
+
+    if (teamError) throw teamError;
+
+    // Fetch the Pokémon in this team
+    const { data: pokemonData, error: pokemonError } = await supabase
+      .from("team_pokemon")
+      .select("pokemon_id, pokemon (name, type, power, life, image, id)")
+      .eq("team_id", teamId);
+
+    if (pokemonError) throw pokemonError;
+
+    res.json({
+      team: teamData,
+      pokemons: pokemonData.map((p) => p.pokemon),
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch team details" });
+  }
+});
+
+app.get("/api/type-factor/:type1/:type2", async (req, res) => {
+  const { type1, type2 } = req.params;
+
+  try {
+    // Fetch the type factor from your database using Supabase
+    const { data, error } = await supabase
+      .from("weakness")
+      .select("factor")
+      .eq("type1", type1)
+      .eq("type2", type2)
+      .single();
+
+    if (error) throw error;
+
+    // Return the effectiveness factor to the frontend
+    res.json({ factor: data.factor });
+  } catch (err) {
+    console.error("Error fetching type factor:", err);
+    res.status(500).json({ error: "Failed to fetch type factor" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
