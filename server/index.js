@@ -13,8 +13,14 @@ dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
 const app = express();
 const port = process.env.PORT || 5000;
 
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
@@ -94,22 +100,21 @@ app.get("/api/pokemon/:id", async (req, res) => {
 app.put("/api/pokemon/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { power, life, typeName } = req.body;
+    const { name, power, life, typeName, image } = req.body;
 
-    if (!power || !life || !typeName) {
+    if (!name || !power || !life || !typeName) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const { data: existingPokemon, error: existingError } = await supabase
-      .from("pokemon")
-      .select("*")
-      .eq("id", id)
-      .single();
+    // Convert power and life to numbers
+    const numPower = Number(power);
+    const numLife = Number(life);
 
-    if (existingError || !existingPokemon) {
-      return res.status(404).json({ message: "Pokemon not found" });
+    if (isNaN(numPower) || isNaN(numLife)) {
+      return res.status(400).json({ error: "Invalid power or life value" });
     }
 
+    // Fetch the type ID
     const { data: typeData, error: typeError } = await supabase
       .from("pokemon_type")
       .select("id")
@@ -120,37 +125,42 @@ app.put("/api/pokemon/:id", async (req, res) => {
       return res.status(400).json({ message: "Invalid pokemon type" });
     }
 
+    // Prepare the update data
     const updateData = {
       id,
+      name,
       type: typeData.id,
-      power,
-      life,
+      power: numPower,
+      life: numLife,
+      image: image || null,
     };
 
+    // Update the Pokemon
     const { data: updatedPokemon, error: updateError } = await supabase
       .from("pokemon")
-      .upsert(updateData)
+      .update(updateData)
+      .eq("id", id)
       .select();
 
-    if (updateError || !updatedPokemon || updatedPokemon.length === 0) {
+    if (updateError) {
+      console.error("Error updating Pokemon:", updateError);
+      return res
+        .status(500)
+        .json({ message: "Pokemon not updated", error: updateError.message });
+    }
+
+    if (!updatedPokemon || updatedPokemon.length === 0) {
       return res.status(500).json({ message: "Pokemon not updated" });
     }
 
-    const { data: fetchedPokemon, error: fetchError } = await supabase
-      .from("pokemon")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (fetchError) throw fetchError;
-
     const pokemonWithType = {
-      ...fetchedPokemon,
+      ...updatedPokemon[0],
       typeName,
     };
 
     res.json(pokemonWithType);
   } catch (error) {
+    console.error("Unexpected error:", error);
     res.status(500).json({ error: error.message });
   }
 });
