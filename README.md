@@ -21,7 +21,6 @@ Welcome to the Pokémon Battle Application! This project is a full-stack web app
 - [Project Structure](#project-structure)
 - [Troubleshooting](#troubleshooting)
 - [Additional Notes](#additional-notes)
-- [License](#license)
 
 ---
 
